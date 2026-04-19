@@ -251,7 +251,6 @@ function moveToward(e, target, speed, dt) {
 
 function tongueHitsEnemy(tongue, e, field) {
   if (e.dead) return false;
-  if (!tongue.active) return false;
   const def = ENEMY_TYPES[e.type];
   const x0 = field.cx, y0 = field.cy;
   const L = tongue.len;

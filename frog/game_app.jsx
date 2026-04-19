@@ -495,7 +495,8 @@ function App() {
 
       {mode === 'title' && (
         <TitleScreen onStart={startGame} hi={hiScore} theme={theme} coins={coins}
-          onOpenShop={() => setShopOpen(true)} />
+          onOpenShop={() => setShopOpen(true)}
+          FrogComp={FrogComp} activeSkin={activeSkin} />
       )}
 
       {mode === 'title' && shopOpen && (
@@ -569,14 +570,15 @@ function PauseScreen({ onResume, onHome }) {
   );
 }
 
-function TitleScreen({ onStart, hi, theme, coins, onOpenShop }) {
+function TitleScreen({ onStart, hi, theme, coins, onOpenShop, FrogComp, activeSkin }) {
+  const TFrog = FrogComp || Frog;
   return (
     <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', pointerEvents:'none', background:'radial-gradient(ellipse at center, rgba(0,0,0,0.1), rgba(0,0,0,0.55))' }}>
       <h1 style={{ margin:0, fontSize:64, fontWeight:900, letterSpacing:-2, textShadow:'0 6px 0 rgba(0,0,0,0.4)', color:'#fff', textAlign:'center', lineHeight:1.05 }}>
         カエル<span style={{ color: theme.accent }}>ファイト</span>
       </h1>
       <div style={{ fontSize:13, letterSpacing:4, opacity:0.7, marginTop:6, marginBottom:18, fontFamily:'JetBrains Mono, monospace' }}>FROG · FIGHT · ENDLESS</div>
-      <div style={{ margin:'4px 0' }}><Frog size={180} mouthOpen={false} eyeLook={{x:0, y:0.1}} /></div>
+      <div style={{ margin:'4px 0' }}><TFrog size={180} mouthOpen={false} eyeLook={{x:0, y:0.1}} skin={activeSkin} /></div>
       <button onClick={onStart} style={{ pointerEvents:'auto', marginTop:22, padding:'16px 48px', borderRadius:999, border:'none', fontSize:22, fontWeight:900, letterSpacing:2, background: theme.accent, color:'#1a1a1a', cursor:'pointer', boxShadow:'0 6px 0 rgba(0,0,0,0.35), 0 10px 30px rgba(0,0,0,0.3)', fontFamily:'inherit' }}>スタート</button>
       <div style={{ display:'flex', gap:10, alignItems:'center', marginTop:16, pointerEvents:'auto' }}>
         <button onClick={onOpenShop} style={{ padding:'10px 20px', borderRadius:999, background:'rgba(255,255,255,0.1)', border:'1.5px solid rgba(255,216,77,0.6)', color:'#ffd84d', cursor:'pointer', fontSize:14, fontWeight:800, letterSpacing:1.5, fontFamily:'inherit' }}>🛒 SHOP</button>

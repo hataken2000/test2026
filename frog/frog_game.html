@@ -5315,6 +5315,17 @@ function App() {
     enemiesRef.current.push(window.GAME.makeEnemy('dragonfly', field, diff));
   }, [mode, tweaks, field]);
   const debugHeal = useCallback(() => { if (mode !== 'play') return; livesRef.current = valuesRef.current.maxLives; setLives(livesRef.current); }, [mode]);
+  const debugResetCoins = useCallback(() => {
+    setCoins(0); coinsRef.current = 0; window.upgradesApi.saveWallet(0);
+  }, []);
+  const debugResetGacha = useCallback(() => {
+    setOwnedIds([]); window.gachaApi.saveOwned([]);
+    const empty = {}; setSelected(empty); window.gachaApi.saveSelected(empty);
+    setGachaResult(null);
+  }, []);
+  const debugResetHiScore = useCallback(() => {
+    setHiScore(0); localStorage.setItem('frog_hi', '0');
+  }, []);
 
   useEffect(() => {
     const onKey = (ev) => {
@@ -5539,10 +5550,12 @@ function App() {
       )}
 
       {showDebug && (mode === 'play' || mode === 'paused') && (
-        <DebugPanel score={score} lives={lives}
+        <DebugPanel score={score} lives={lives} coins={coins}
           onAddScore={() => debugAddScore(500)} onAddScore1k={() => debugAddScore(1000)}
           onAddScore2500={() => debugAddScore(2500)} onSpawnBoss={debugSpawnBoss}
-          onHeal={debugHeal} onClose={() => setShowDebug(false)} />
+          onHeal={debugHeal} onResetCoins={debugResetCoins}
+          onResetGacha={debugResetGacha} onResetHiScore={debugResetHiScore}
+          onClose={() => setShowDebug(false)} />
       )}
 
       {mode === 'paused' && <PauseScreen onResume={togglePause} onHome={() => setMode('title')} />}
@@ -5890,8 +5903,9 @@ function Seg({ opts, v, on }) {
   );
 }
 
-function DebugPanel({ score, lives, onAddScore, onAddScore1k, onAddScore2500, onSpawnBoss, onHeal, onClose }) {
+function DebugPanel({ score, lives, coins, onAddScore, onAddScore1k, onAddScore2500, onSpawnBoss, onHeal, onResetCoins, onResetGacha, onResetHiScore, onClose }) {
   const btn = { padding:'9px 12px', borderRadius:8, background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.18)', color:'#fff', cursor:'pointer', fontSize:12, fontWeight:700, letterSpacing:0.5, fontFamily:'JetBrains Mono, monospace', textAlign:'left' };
+  const resetBtn = { ...btn, background:'rgba(255,80,80,0.1)', border:'1px solid rgba(255,80,80,0.35)', color:'rgba(255,160,160,0.9)' };
   return (
     <div onPointerDown={e => e.stopPropagation()}
       style={{ position:'absolute', left:18, bottom:18, width:220, background:'rgba(12,18,14,0.92)', border:'1px solid rgba(255,216,77,0.35)', borderRadius:14, padding:14, zIndex:60, boxShadow:'0 10px 30px rgba(0,0,0,0.4)' }}>
@@ -5905,8 +5919,12 @@ function DebugPanel({ score, lives, onAddScore, onAddScore1k, onAddScore2500, on
         <button style={btn} onClick={onAddScore2500}>+2500 スコア</button>
         <button style={btn} onClick={onSpawnBoss}>ボス召喚</button>
         <button style={btn} onClick={onHeal}>ライフ全快</button>
+        <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', margin:'4px 0' }} />
+        <button style={resetBtn} onClick={onResetCoins}>🪙 コインリセット</button>
+        <button style={resetBtn} onClick={onResetGacha}>🎰 ガチャリセット</button>
+        <button style={resetBtn} onClick={onResetHiScore}>🏆 ハイスコアリセット</button>
       </div>
-      <div style={{ marginTop:10, fontSize:10, opacity:0.55, fontFamily:'JetBrains Mono, monospace', lineHeight:1.5 }}>score {score} · lives {lives}</div>
+      <div style={{ marginTop:10, fontSize:10, opacity:0.55, fontFamily:'JetBrains Mono, monospace', lineHeight:1.5 }}>score {score} · lives {lives} · coins {coins}</div>
     </div>
   );
 }

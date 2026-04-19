@@ -20,10 +20,10 @@ const UPGRADES = {
     description: '舌が伸びきった状態を長くキープ',
     icon: '👅',
     base: 0,           // ms (Lv0 = ゲームコードの50msフォールバック)
-    step: 1000,        // 1秒 / level
-    maxLevel: 5,       // 最大5秒追加
+    step: 100,         // 0.1秒 / level
+    maxLevel: 5,       // 最大0.5秒追加
     cost: 1,
-    format: (v) => v === 0 ? 'デフォルト' : `+${v / 1000}秒`,
+    format: (v) => v === 0 ? 'デフォルト' : `+${(v / 1000).toFixed(1)}秒`,
   },
   // Future upgrades plug in here
 };

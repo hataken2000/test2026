@@ -774,6 +774,122 @@ function LegendItem({ label, pts, Comp, size }) {
   );
 }
 
+// --- Shop dialog --------------------------------------------------
+function ShopDialog({ coins, levels, onBuy, onReset, onClose }) {
+  const defs = window.UPGRADES_DEF;
+  return (
+    <div
+      onPointerDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', zIndex: 80,
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 320, background: 'rgba(12,22,15,0.97)',
+          border: '1px solid rgba(255,255,255,0.14)',
+          borderRadius: 18, padding: 22,
+          boxShadow: '0 16px 48px rgba(0,0,0,0.55)',
+          color: '#fff',
+        }}
+      >
+        {/* ヘッダー */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+          <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: 3 }}>🛒 SHOP</div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 800, color: '#ffd84d', fontSize: 15 }}>
+              🪙 {coins}
+            </div>
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 22, lineHeight: 1, opacity: 0.6 }}>×</button>
+          </div>
+        </div>
+
+        {/* アップグレード一覧 */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {Object.entries(defs).map(([key, def]) => {
+            const lvl = levels[key] || 0;
+            const maxed = lvl >= def.maxLevel;
+            const canBuy = !maxed && coins >= def.cost;
+            const currentVal = def.base + def.step * lvl;
+            const nextVal = def.base + def.step * (lvl + 1);
+            return (
+              <div key={key} style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12, padding: '12px 14px',
+              }}>
+                {/* タイトル行 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 14 }}>{def.icon} {def.label}</div>
+                    <div style={{ fontSize: 11, opacity: 0.55, marginTop: 2 }}>{def.description}</div>
+                  </div>
+                  {/* レベルインジケーター */}
+                  <div style={{ display: 'flex', gap: 3, marginTop: 2 }}>
+                    {Array.from({ length: def.maxLevel }).map((_, i) => (
+                      <div key={i} style={{
+                        width: 10, height: 10, borderRadius: 3,
+                        background: i < lvl ? '#ffd84d' : 'rgba(255,255,255,0.15)',
+                        border: '1px solid rgba(0,0,0,0.3)',
+                      }} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* 現在値 / 次の値 */}
+                <div style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', opacity: 0.75, marginBottom: 8 }}>
+                  {maxed
+                    ? <span style={{ color: '#ffd84d' }}>MAX: {def.format(currentVal)}</span>
+                    : <span>現在: {def.format(currentVal)} → <span style={{ color: '#7dd3fc' }}>{def.format(nextVal)}</span></span>
+                  }
+                </div>
+
+                {/* 購入ボタン */}
+                {!maxed && (
+                  <button
+                    onClick={() => onBuy(key)}
+                    disabled={!canBuy}
+                    style={{
+                      width: '100%', padding: '8px 0', borderRadius: 8, border: 'none',
+                      background: canBuy ? '#ffd84d' : 'rgba(255,255,255,0.08)',
+                      color: canBuy ? '#1a1a1a' : 'rgba(255,255,255,0.35)',
+                      fontWeight: 800, fontSize: 13, cursor: canBuy ? 'pointer' : 'default',
+                      fontFamily: 'inherit', letterSpacing: 1,
+                    }}
+                  >
+                    🪙 {def.cost} で強化
+                  </button>
+                )}
+                {maxed && (
+                  <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#ffd84d', opacity: 0.85, letterSpacing: 2 }}>
+                    MAX LEVEL
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* リセットボタン */}
+        <button
+          onClick={onReset}
+          style={{
+            width: '100%', marginTop: 14, padding: '9px 0', borderRadius: 8,
+            background: 'transparent', border: '1px solid rgba(255,100,100,0.4)',
+            color: 'rgba(255,150,150,0.8)', cursor: 'pointer',
+            fontWeight: 700, fontSize: 12, fontFamily: 'inherit', letterSpacing: 1,
+          }}
+        >
+          リセット（コイン全額返金）
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // --- Game over ----------------------------------------------------
 function GameOverScreen({ score, hi, onRetry, onHome }) {
   const isNew = score >= hi && score > 0;

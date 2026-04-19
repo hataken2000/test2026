@@ -19,11 +19,11 @@ const UPGRADES = {
     label: '舌の停滞時間',
     description: '舌が伸びきった状態を長くキープ',
     icon: '👅',
-    base: 50,          // ms
-    step: 60,
-    maxLevel: 4,       // 50..290 ms
-    cost: 2,
-    format: (v) => `${v} ms`,
+    base: 0,           // ms (Lv0 = ゲームコードの50msフォールバック)
+    step: 1000,        // 1秒 / level
+    maxLevel: 5,       // 最大5秒追加
+    cost: 1,
+    format: (v) => v === 0 ? 'デフォルト' : `+${v / 1000}秒`,
   },
   // Future upgrades plug in here
 };
